@@ -1,5 +1,10 @@
 
-# API de Cadastro de Perfil (Node.js + Auth JWT)
+# API Insight Jobs
+
+### Integrantes
+* **Kelwin Silva** (RM: 566348)
+* **Pedro Almeida** (RM: 564711)
+* **João Paulo** (RM: 565383)
 
 Esta é uma API RESTful desenvolvida em Node.js para cadastro e autenticação de usuários. Os dados são armazenados localmente em um arquivo JSON (`src/data/user.json`) e a segurança é feita via JWT (JSON Web Token).
 
