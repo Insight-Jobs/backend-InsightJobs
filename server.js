@@ -1,25 +1,24 @@
-require ('dotenv').config()
 
-const PORT = 3000
+const express = require('express');
+const cors = require('cors');
+const path = require('path');
 
-const express = require("express")
-const mongoose = require("mongoose");
+require('dotenv').config();
+const userRoutes = require('./src/routes/userRoutes');
 const app = express();
 
-app.use(express.json())
-
-//Conenctando banco de dados
-mongoose.connect(process.env.MONGODB_URI)
-    .then(() =>console.log('Conectado ao banco de dados'))
-    .catch(err => console.error('Erro ao conectar ao banco de dados '))
-
-// ------------------------- ROTAS ---------------------------
+// Configurações
+app.use(express.urlencoded({ extended: true })); 
+app.use(express.json());
+app.use(cors());
 
 
-app.get("/" , (req, res) =>{
-    res.send("API de Autenticacao rodando!! ")
-})
+app.use(express.static(path.join(__dirname, '.')));
 
-app.listen(PORT, ()=>{
-    console.log(`Servidor rodando na porta ${PORT}`);
-})
+// Usar as rotas que criamos
+app.use('/', userRoutes);
+
+const PORT = 3000;
+app.listen(PORT, () => {
+    console.log(`Servidor rodando em http://localhost:${PORT}`);
+});
