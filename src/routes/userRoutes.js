@@ -13,4 +13,6 @@ router.get('/usuarios', authMiddleware, (req, res) => {
     res.json({ mensagem: "Você acessou uma rota protegida!", area: "Dados Sigilosos" });
 });
 
+router.get('/perfil', authMiddleware, userController.getProfile);
+
 module.exports = router;

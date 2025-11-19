@@ -84,7 +84,57 @@ const loginUser = async (req, res) => {
     }
 };
 
+const getProfile = async (req, res) => {
+  try {
+    console.log('📦 Requisição recebida em /perfil');
+    console.log('🔑 User ID:', req.userId);
+    console.log('🔍 Tipo do User ID:', typeof req.userId);
+
+    const userId = req.userId;
+
+    // Verifique se o userModel está carregado corretamente
+    console.log('📚 userModel functions:', Object.keys(userModel));
+
+    const user = await userModel.getUserById(userId);
+    console.log('👤 Usuário encontrado:', user);
+
+    if (!user) {
+      console.log('❌ Usuário não encontrado para ID:', userId);
+      
+      // Liste todos os usuários para debug
+      const allUsers = await userModel.getAllUsers();
+      console.log('📋 Todos os usuários no sistema:', allUsers.map(u => ({ id: u.id, email: u.email })));
+      
+      return res.status(404).json({ erro: 'Usuário não encontrado' });
+    }
+
+    const userProfile = {
+      id: user.id,
+      nome: user.nome,
+      foto: user.foto,
+      cargo: user.cargo,
+      resumo: user.resumo,
+      email: user.email,
+      localizacao: user.localizacao,
+      area: user.area,
+      habilidadesTecnicas: user.habilidadesTecnicas,
+      softSkills: user.softSkills,
+      areaInteresses: user.areaInteresses,
+      experiencias: user.experiencias,
+      formacao: user.formacao
+    };
+
+    console.log('✅ Perfil enviado com sucesso');
+    res.json(userProfile);
+
+  } catch (error) {
+    console.error('❌ Erro em getProfile:', error);
+    res.status(500).json({ erro: "Erro ao buscar perfil: " + error.message });
+  }
+};
+
 module.exports = {
     registerUser,
-    loginUser
+    loginUser,
+    getProfile
 };

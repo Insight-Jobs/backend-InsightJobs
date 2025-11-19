@@ -1,3 +1,32 @@
 [
- 
+  {
+    "id": 1763481496288,
+    "email": "pedrominato23@gmail.com",
+    "senha": "$2b$10$5lAdBRZSLw3aMQrtfN9.IOohjBfwqiihp8mc/TyfWeSlJ22Ffd572",
+    "nome": "Pedro Almeida",
+    "foto": "https://www.valuehost.com.br/blog/wp-content/uploads/2023/07/valuesoftsistemas_valuehosthospedagem_image_737.jpeg.webp",
+    "cargo": "Estagiario",
+    "resumo": "Sou dev e estou em busca do meu primeira vaga",
+    "localizacao": "Sao paulo SP",
+    "area": "TI",
+    "habilidadesTecnicas": [
+      "Java ",
+      "React",
+      "CLOUD"
+    ],      
+    "softSkills": [
+      "Comunicao",
+      "Esforco "
+    ],
+    "areaInteresses": [
+      "IA",
+      "CLOUD"
+    ],
+    "experiencias": [
+      "Nenhuma"
+    ],
+    "formacao": [
+      "FIAP engenharia de software"
+    ]
+  }
 ]
