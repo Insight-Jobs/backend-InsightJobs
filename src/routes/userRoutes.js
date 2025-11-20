@@ -16,3 +16,9 @@ router.get('/usuarios', authMiddleware, (req, res) => {
 router.get('/perfil', authMiddleware, userController.getProfile);
 
 module.exports = router;
+
+const jobController = require('../controllers/jobController');
+
+router.get('/vagas/buscar', jobController.buscarVagas);
+
+router.get('/vagas/buscar', authMiddleware, jobController.buscarVagas);
