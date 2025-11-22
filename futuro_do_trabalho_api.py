@@ -4,9 +4,12 @@ import sys
 from dotenv import load_dotenv
 import random
 import os
+from flask import Flask, jsonify, request
+from flask_cors import CORS
 
 load_dotenv()
-# Criar um .env conforme dito no README.md 
+
+# Configuração da API
 API_KEY = os.getenv('rapidapi-key')
 API_HOST = os.getenv('rapidapi-host')
 
@@ -14,6 +17,9 @@ headers = {
     "x-rapidapi-key": API_KEY,
     "x-rapidapi-host": API_HOST
 }
+
+app = Flask(__name__)
+CORS(app)  # Habilita CORS para requisições do frontend
 
 
 def obter_tendencias_vagas(termo_busca):
@@ -46,9 +52,10 @@ def obter_tendencias_vagas(termo_busca):
                 "salario": item.get("job_salary", "Não informado"),
                 "tipo_carga_horaria": item.get("job_employment_type"),
                 "beneficios": item.get("job_benefits", []),
+                "descricao": item.get("job_description", "Descrição não disponível"),
                 "crescimento": random.randint(1, 10),
-                "link": item.get ("job_apply_link"),
-                "opcoes_aplicacao": item.get ("apply_options", [])
+                "link": item.get("job_apply_link"),
+                "opcoes_aplicacao": item.get("apply_options", [])
             }
 
             vagas_formatadas.append(vaga)
@@ -92,61 +99,35 @@ def calcular_crescimento_total(lista_vagas, indice=0):
     return crescimento_atual + calcular_crescimento_total(lista_vagas, indice + 1)
 
 
-def exibir_vagas(lista_vagas):
+@app.route('/api/vagas', methods=['GET'])
+def api_vagas():
     """
-    Exibe cada vaga formatada, incluindo links de aplicação.
+    Endpoint para obter vagas com base em termo de busca.
+    Query params:
+    - termo_busca (obrigatório): termo para buscar vagas
+    - termo_filtro (opcional): termo para filtrar vagas
     """
-    for vaga in lista_vagas:
-        print("Vaga:", vaga["titulo"])
-        print("Empresa:", vaga["empresa"])
-        print("Local:", vaga["local"])
-        print("Crescimento:", vaga["crescimento"])
+    termo_busca = request.args.get('termo_busca', '')
+    termo_filtro = request.args.get('termo_filtro', '')
 
-        # 🔹 Link principal de aplicação
-        if vaga.get("link"):
-            print("Aplicar:", vaga["link"])
-
-        # 🔹 Outras opções de aplicação
-        if vaga.get("opcoes_aplicacao"):
-            print("Opções de Aplicação:")
-            for opcao in vaga["opcoes_aplicacao"]:
-                print(f"  - {opcao.get('publisher')}: {opcao.get('apply_link')}")
-
-        print("-" * 40)
-
-
-
-def main():
-    # Recebe argumentos da linha de comando
-    if len(sys.argv) < 2:
-        print(json.dumps({"erro": "Termo de busca não fornecido"}))
-        return
-
-    termo_busca = sys.argv[1]
-    termo_filtro = sys.argv[2] if len(sys.argv) > 2 else ""
+    if not termo_busca:
+        return jsonify({"erro": "Termo de busca não fornecido"}), 400
 
     # 1. Buscar vagas
     vagas = obter_tendencias_vagas(termo_busca)
 
     # Se houve erro na API
     if isinstance(vagas, dict) and "erro" in vagas:
-        print(json.dumps(vagas))
-        return
+        return jsonify(vagas), 500
 
-    # 2. Exibir todas as vagas
-    print("\n=== VAGAS ENCONTRADAS ===\n")
-    exibir_vagas(vagas)
-
-    # 3. Aplicar filtro, se houver
+    # 2. Aplicar filtro, se houver
     if termo_filtro.strip() != "":
         vagas = filtrar_vagas(vagas, termo_filtro)
-        print("\n=== VAGAS APÓS FILTRO ===\n")
-        exibir_vagas(vagas)
 
-    # 4. Calcular crescimento total
+    # 3. Calcular crescimento total
     total_crescimento = calcular_crescimento_total(vagas)
 
-    # 5. Retorno final em JSON
+    # 4. Retorno final em JSON
     resultado = {
         "total_vagas": len(vagas),
         "vagas": vagas,
@@ -155,8 +136,16 @@ def main():
         "termo_filtro": termo_filtro
     }
 
-    print("\n=== RESULTADO EM JSON ===\n")
-    print(json.dumps(resultado, indent=4))
+    return jsonify(resultado), 200
+
+
+@app.route('/api/health', methods=['GET'])
+def health_check():
+    """
+    Endpoint para verificar se a API está funcionando.
+    """
+    return jsonify({"status": "API está funcionando corretamente"}), 200
+
 
 if __name__ == '__main__':
-    main ()
+    app.run(debug=True, host='0.0.0.0', port=5000)
